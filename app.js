@@ -3,6 +3,7 @@
 // The responsibility of establishing the connection to the database has been given to the app.js module
 const config = require('./utils/config');
 const express = require('express');
+require('express-async-errors');
 
 const app = express();
 const cors = require('cors');

@@ -68,7 +68,7 @@ describe('total likes', () => {
     },
   ];
 
-  test('lotsssssssssss', () => {
+  test('total likes', () => {
     const result2 = listHelper.totalLikes(blogs);
     expect(result2).toBe(36);
   });

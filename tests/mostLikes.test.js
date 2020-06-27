@@ -86,7 +86,7 @@ describe('total likes', () => {
     __v: 0,
   };
 
-  test('lotsssssssssss', () => {
+  test('most likes', () => {
     const result2 = listHelper.mostLikes(blogs);
     expect(result2).toEqual(expectedmultiBlog);
   });

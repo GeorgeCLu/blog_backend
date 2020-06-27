@@ -5,14 +5,24 @@
 // the blog.js module
 const mongoose = require('mongoose');
 
-mongoose.set('useFindAndModify', false);
+// commented out for testing to work
+// mongoose.set('useFindAndModify', false);
 
 // define specific validation rules for each field in the schema:
 const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
+  title: {
+    type: String,
+    required: true,
+  },
+  author: {
+    type: String,
+    required: true,
+  },
   url: String,
-  likes: Number,
+  likes: {
+    type: Number,
+    default: 0,
+  },
 });
 
 blogSchema.set('toJSON', {

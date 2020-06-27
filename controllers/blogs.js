@@ -8,13 +8,16 @@ const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 
 // get ones stored on modo
-blogsRouter.get('/', (request, response) => {
-  Blog.find({}).then(blogs => {
-    response.json(blogs.map(blog => blog.toJSON()));
-  });
+blogsRouter.get('/', async (request, response) => {
+  const blogs = await Blog.find({});
+  response.json(blogs.map(blog => blog.toJSON()));
+  // Blog.find({}).then(blogs => {
+  // eslint-disable-next-line indent
+    // response.json(blogs.map(blog => blog.toJSON()));
+  // });
 });
 
-blogsRouter.post('/', (request, response, next) => {
+blogsRouter.post('/', async (request, response) => {
   // eslint-disable-next-line prefer-destructuring
   const body = request.body;
 
@@ -22,14 +25,17 @@ blogsRouter.post('/', (request, response, next) => {
     title: body.title,
     author: body.author,
     url: body.url,
-    likes: body.likes,
+    likes: body.likes, // |0 default zero here instead on in schema?
   });
 
-  blog.save()
+  const savedBlog = await blog.save();
+  response.json(savedBlog.toJSON());
+
+  /* blog.save()
     .then(savedBlog => {
       response.json(savedBlog.toJSON());
     })
-    .catch(error => next(error));
+    .catch(error => next(error)); */
 });
 
 module.exports = blogsRouter;
