@@ -13,7 +13,7 @@ const mostLikes = array => {
 };
 
 module.exports = {
-  dummy, totalLikes, mostLikes
+  dummy, totalLikes, mostLikes,
 };
 
 // next part
