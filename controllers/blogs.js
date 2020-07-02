@@ -22,7 +22,7 @@ blogsRouter.get('/', async (request, response) => {
 
 // get individual blog from mongo
 blogsRouter.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id);
+  const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 });
   if (blog) {
     response.json(blog.toJSON());
   } else {
@@ -30,28 +30,21 @@ blogsRouter.get('/:id', async (request, response) => {
   }
 });
 
-// The helper function getTokenFrom isolates the token from the authorization header.
-const getTokenFrom = request => {
-  const authorization = request.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    return authorization.substring(7);
-  }
-  return null;
-};
-
 // eslint-disable-next-line consistent-return
 blogsRouter.post('/', async (request, response) => {
   // eslint-disable-next-line prefer-destructuring
   const body = request.body;
-  const token = getTokenFrom(request);
+  // moved to middleware
+  // const token = getTokenFrom(request);
   // The validity of the token is checked with jwt.verify.
   // The method also decodes the token, or returns the Object which the token was based on:
   // The object decoded from the token contains the username and id fields,
   // which tells the server who made the request.
-  const decodedToken = jwt.verify(token, process.env.SECRET);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  // const decodedToken = jwt.verify(token, process.env.SECRET);
   // no token, or the object decoded from the token does not contain the users identity
   // (decodedToken.id is undefined),
-  if (!token || !decodedToken.id) {
+  if (!request.token || !decodedToken.id) {
     return response.status(401).json({ error: 'token missing or invalid' });
   }
   // When the identity of the maker of the request is resolved,
@@ -103,7 +96,12 @@ blogsRouter.put('/:id', async (request, response) => {
     .catch(error => next(error)); */
 });
 
+// eslint-disable-next-line consistent-return
 blogsRouter.delete('/:id', async (request, response) => {
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!request.token || !decodedToken.id) {
+    return response.status(401).json({ error: 'token missing or invalid' });
+  }
   await Blog.findByIdAndRemove(request.params.id);
   response.status(204).end();
 });

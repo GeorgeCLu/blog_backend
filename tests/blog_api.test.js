@@ -59,6 +59,12 @@ describe('when there is initially some blogs saved', () => {
 
     expect(response.body[0].title).toBe('Blog 1');
   });
+
+  test('unique identifier property of the blog posts is named id', async () => {
+    const response = await api.get('/api/blogs');
+
+    expect(response.body[0].id).toBeDefined();
+  });
 });
 
 describe('viewing a specific blog', () => {
@@ -96,7 +102,33 @@ describe('viewing a specific blog', () => {
 });
 
 describe('addition of a new blog', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    const blogObjects = helper.initialBlogs.map((blog) => new Blog(blog));
+    const promiseArray = blogObjects.map((blog) => blog.save());
+    await Promise.all(promiseArray);
+    await User.deleteMany({});
+  });
   test('a valid blog can be added', async () => {
+    const newUser = {
+      username: 'username',
+      name: 'name',
+      password: 'password',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const loggingIn = await api
+      .post('/api/login')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const userToken = loggingIn.body.token.toString();
+    const authSchema = 'Bearer ';
+    const authToken = authSchema.concat(userToken);
     const newBlog = {
       title: 'Blog 3',
       author: 'Author 3',
@@ -106,6 +138,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', authToken)
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -114,37 +147,77 @@ describe('addition of a new blog', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
     const contents = blogsAtEnd.map((n) => n.title);
-
-    // const response = await api.get('/api/blogs');
-
-    // const contents = response.body.map((r) => r.title);
-
-    // expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
     expect(contents).toContain(
       'Blog 3',
     );
   });
 
-  test('fails with status code 400 if data invaild - blog without title and url is not added', async () => {
+  test('adding a blog fails with proper status code 401 Unauthorized if token is not provided', async () => {
     const newBlog = {
-      author: 'author 0',
+      title: 'Blog 0',
+      author: 'Author 0',
+      url: 'URL 0',
       likes: 0,
     };
 
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .expect(401);
+  });
+
+  test('fails with status code 400 if data invaild - blog without title and url is not added', async () => {
+    const newUser = {
+      username: 'username2',
+      name: 'name2',
+      password: 'password2',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const loggingIn = await api
+      .post('/api/login')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const userToken = loggingIn.body.token.toString();
+    const authSchema = 'Bearer ';
+    const authToken = authSchema.concat(userToken);
+    const newBlog = {
+      author: 'Author 0',
+      likes: 0,
+    };
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', authToken)
+      .send(newBlog)
       .expect(400);
-
-    // const blogsAtEnd = await helper.blogsInDb();
-    // expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
-
-    // const response = await api.get('/api/blogs');
-
-    // expect(response.body).toHaveLength(helper.initialBlogs.length);
   });
 
   test('blog added has default 0 likes', async () => {
+    const newUser = {
+      username: 'username3',
+      name: 'name3',
+      password: 'password3',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const loggingIn = await api
+      .post('/api/login')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const userToken = loggingIn.body.token.toString();
+    const authSchema = 'Bearer ';
+    const authToken = authSchema.concat(userToken);
     const newBlog = {
       title: 'Blog 4',
       author: 'Author 4',
@@ -161,6 +234,7 @@ describe('addition of a new blog', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', authToken)
       .send(newBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -169,12 +243,6 @@ describe('addition of a new blog', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
     const contents = blogsAtEnd.map((n) => n.likes);
-
-    // const response = await api.get('/api/blogs');
-
-    //  contents = response.body.map((r) => r.likes);
-
-    // expect(response.body).toHaveLength(helper.initialBlogs.length + 1);
     expect(contents).toContain(
       0,
     );
@@ -183,18 +251,59 @@ describe('addition of a new blog', () => {
 
 describe('deletion of a blog', () => {
   test('a blog can be deleted', async () => {
+    await Blog.deleteMany({});
+    const newUser = {
+      username: 'username5',
+      name: 'name5',
+      password: 'password5',
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const loggingIn = await api
+      .post('/api/login')
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+    const userToken = loggingIn.body.token.toString();
+    const authSchema = 'Bearer ';
+    const authToken = authSchema.concat(userToken);
+    const newBlog = {
+      title: 'Blog 5',
+      author: 'Author 5',
+      url: 'URL 5',
+      likes: 5,
+    };
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', authToken)
+      .send(newBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    const blogsAtMiddle = await helper.blogsInDb();
+    expect(blogsAtMiddle).toHaveLength(1);
+
+    const contents = blogsAtMiddle.map((n) => n.title);
+    expect(contents).toContain(
+      'Blog 5',
+    );
+
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', authToken)
       .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
-    expect(blogsAtEnd).toHaveLength(
-      helper.initialBlogs.length - 1,
-    );
+    expect(blogsAtEnd).toHaveLength(0);
 
     const titles = blogsAtEnd.map((r) => r.title);
 

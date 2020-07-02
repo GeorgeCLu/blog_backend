@@ -1,3 +1,5 @@
+/* eslint-disable no-underscore-dangle */
+/* eslint-disable no-param-reassign */
 // model defines the mongoose schema
 const mongoose = require('mongoose');
 const uniqueValidator = require('mongoose-unique-validator');

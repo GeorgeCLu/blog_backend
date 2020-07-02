@@ -12,6 +12,20 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' });
 };
 
+// The helper function getTokenFrom isolates the token from the authorization header.
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7);
+  }
+  return null;
+};
+
+const tokenExtractor = (request, response, next) => {
+  request.token = getTokenFrom(request);
+  next();
+};
+
 // eslint-disable-next-line consistent-return
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
@@ -38,4 +52,5 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
+  tokenExtractor,
 };
