@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '../env' });
 
 const PORT = process.env.PORT || 3001;
 // eslint-disable-next-line max-len
@@ -9,6 +9,7 @@ let { MONGODB_URI } = process.env;
 if (process.env.NODE_ENV === 'test') {
   MONGODB_URI = process.env.TEST_MONGODB_URI;
 }
+
 console.log("port is")
 console.log(PORT)
 console.log("mongodb uri is")
