@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '.env' });
+require('dotenv').config();
 
 const PORT = process.env.PORT || 3001;
 // eslint-disable-next-line max-len
