@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+// also need to add SECRET to config
 // .env file should be used only for local development
 // and you shouldn't commit this file to the repository.
 // The general practice on Heroku is that you configure your application by
