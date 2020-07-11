@@ -13,6 +13,7 @@ console.log("port is")
 console.log(PORT)
 console.log("mongodb uri is")
 console.log(MONGODB_URI)
+console.log(process.env.PORT.MONGODB_URI)
 module.exports = {
   MONGODB_URI,
   PORT,
