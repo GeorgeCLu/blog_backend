@@ -12,6 +12,6 @@ There is currently no interface for creating new users, so guest users can log i
 
 Data is is stored in a NOSQL document database on MongoDB Atlas.
 
-The backend is tested using the Jest and the supertest libaries.
+The backend is tested using the Jest and the supertest libraries.
 
 User authentication for logging in is done using the bcrypt and jsonwebtoken packages.
