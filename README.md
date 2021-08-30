@@ -15,3 +15,5 @@ Data is is stored in a NOSQL document database on MongoDB Atlas.
 The backend is tested using the Jest and the supertest libraries.
 
 User authentication for logging in is done using the bcrypt and jsonwebtoken packages.
+
+Frontend react code is in https://github.com/GeorgeCLu/bloglist-frontend
