@@ -2,7 +2,7 @@
 
 https://enigmatic-forest-29475.herokuapp.com/
 
-This is a web app deployed on Heroku and based upon suggested exercises from https://fullstackopen.com/ to implement a full stack app where logged in users can share links of blogs and like ones shared by other users.
+This is a web app deployed on Heroku and based upon suggested exercises from https://fullstackopen.com/en to implement a full stack app where logged in users can share links of blogs and like ones shared by other users.
 
 The server-side REST API is implemented with Node.js and Express.
 
